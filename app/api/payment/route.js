@@ -1,7 +1,9 @@
-import Iyzipay from 'iyzipay';
-
 export async function POST(request) {
   try {
+    // Require iyzipay at runtime only, never at build time
+    const Iyzipay = require('iyzipay');
+    
+    // Initialize iyzipay only when needed to avoid requiring API keys at build time
     const iyzipay = new Iyzipay({
       apiKey: process.env.NEXT_PUBLIC_IYZICO_API_KEY,
       secretKey: process.env.NEXT_PUBLIC_IYZICO_SECRET_KEY,
