@@ -1,10 +1,16 @@
 import Iyzipay from 'iyzipay';
 
-const iyzipay = new Iyzipay({
-  apiKey: process.env.NEXT_PUBLIC_IYZICO_API_KEY,
-  secretKey: process.env.NEXT_PUBLIC_IYZICO_SECRET_KEY,
-  uri: 'https://api.iyzipay.com'
-});
+export async function POST(request) {
+  try {
+    // Initialize iyzipay only when needed
+    const iyzipay = new Iyzipay({
+      apiKey: process.env.NEXT_PUBLIC_IYZICO_API_KEY,
+      secretKey: process.env.NEXT_PUBLIC_IYZICO_SECRET_KEY,
+      uri: 'https://api.iyzipay.com'
+    });
+
+    const body = await request.json();
+    // ... devam et
 
 export async function POST(request) {
   try {
