@@ -2,38 +2,36 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import type { Product } from '@/types/product';
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  stock?: number;
-}
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; products: Product[] };
 
 function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
-        setProducts(data || []);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data: unknown = await response.json();
+        if (!Array.isArray(data)) throw new Error('Beklenmeyen yanıt biçimi');
+        if (!cancelled) setState({ status: 'ready', products: data as Product[] });
       } catch (err) {
-        console.error('Fetch error:', err);
-        setProducts([
-          { id: 1, name: 'Traktör Parçaları', price: 5000, description: 'Kaliteli traktör yedek parçaları', stock: 10 },
-          { id: 2, name: 'Çapa Yedekleri', price: 2500, description: 'Dayanıklı çapa yedek parçaları', stock: 15 },
-          { id: 3, name: 'Dron Parçaları', price: 3000, description: 'Tarım teknolojisi dron parçaları', stock: 8 }
-        ]);
-      } finally {
-        setLoading(false);
+        console.error('Ürünler yüklenemedi:', err);
+        if (!cancelled) setState({ status: 'error' });
       }
     };
+
     fetchProducts();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -57,17 +55,34 @@ function Home() {
 
       <section id="products" className="max-w-6xl mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-green-800 mb-12 text-center">Öne Çıkan Ürünler</h2>
-        {loading && <div className="text-center text-gray-600">Yükleniyor...</div>}
-        {!loading && (
+
+        {state.status === 'loading' && (
+          <p className="text-center text-gray-600">Yükleniyor...</p>
+        )}
+
+        {state.status === 'error' && (
+          <div role="alert" className="mx-auto max-w-md rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-800">
+            Ürünler şu anda yüklenemiyor. Lütfen biraz sonra tekrar deneyin.
+          </div>
+        )}
+
+        {state.status === 'ready' && state.products.length === 0 && (
+          <p className="text-center text-gray-600">Şu anda listelenen ürün yok.</p>
+        )}
+
+        {state.status === 'ready' && state.products.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {products.map(product => (
+            {state.products.map(product => (
               <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
                 <div className="bg-gradient-to-br from-green-400 to-green-600 h-48 flex items-center justify-center text-5xl">📦</div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-4 text-sm">{product.description}</p>
-                  <p className="text-3xl font-bold text-green-600 mb-4">₺{product.price.toLocaleString('tr-TR')}</p>
-                  <Link href={`/checkout?product=${product.name}&price=${product.price}`} className="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded text-center">
+                  {product.description && <p className="text-gray-600 mb-4 text-sm">{product.description}</p>}
+                  <p className="text-3xl font-bold text-green-600 mb-4">₺{Number(product.price).toLocaleString('tr-TR')}</p>
+                  <Link
+                    href={`/checkout?urun=${encodeURIComponent(String(product.id))}`}
+                    className="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded text-center"
+                  >
                     Satın Al
                   </Link>
                 </div>
