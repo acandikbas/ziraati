@@ -1,55 +1,87 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-const products = [
-  { id: 'traktor', name: 'Traktör Parçaları', price: 5000 },
-  { id: 'capa', name: 'Çapa Yedekleri', price: 2500 },
-  { id: 'dron', name: 'Dron Parçaları', price: 3000 },
-];
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  stock?: number;
+}
 
-export default function Home() {
-  const router = useRouter();
+function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        setProducts(data || []);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setProducts([
+          { id: 1, name: 'Traktör Parçaları', price: 5000, description: 'Kaliteli traktör yedek parçaları', stock: 10 },
+          { id: 2, name: 'Çapa Yedekleri', price: 2500, description: 'Dayanıklı çapa yedek parçaları', stock: 15 },
+          { id: 3, name: 'Dron Parçaları', price: 3000, description: 'Tarım teknolojisi dron parçaları', stock: 8 }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <nav className="bg-green-700 text-white p-4">
-        <div className="max-w-6xl mx-auto flex justify-between">
-          <h1 className="text-3xl font-bold">🌾 Ziraati</h1>
-          <div className="flex gap-4">
-            <button className="hover:bg-green-600 px-4 py-2">Ürünler</button>
-            <button className="bg-orange-500 px-4 py-2">Sepet</button>
+      <header className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold">🌾 Ziraati</h1>
+          <p className="text-green-100 mt-2">Tarım Makineleri & Yedek Parça</p>
+        </div>
+      </header>
+
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <div className="text-center">
+          <h2 className="text-4xl font-bold text-green-800 mb-4">Tarım Makineleri & Yedek Parça</h2>
+          <p className="text-xl text-gray-600 mb-8">Traktör, çapa, dron yedek parçaları</p>
+          <Link href="#products" className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg">
+            Alışverişe Başla
+          </Link>
+        </div>
+      </section>
+
+      <section id="products" className="max-w-6xl mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-green-800 mb-12 text-center">Öne Çıkan Ürünler</h2>
+        {loading && <div className="text-center text-gray-600">Yükleniyor...</div>}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {products.map(product => (
+              <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                <div className="bg-gradient-to-br from-green-400 to-green-600 h-48 flex items-center justify-center text-5xl">📦</div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">{product.name}</h3>
+                  <p className="text-gray-600 mb-4 text-sm">{product.description}</p>
+                  <p className="text-3xl font-bold text-green-600 mb-4">₺{product.price.toLocaleString('tr-TR')}</p>
+                  <Link href={`/checkout?product=${product.name}&price=${product.price}`} className="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded text-center">
+                    Satın Al
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </nav>
-
-      <section className="max-w-6xl mx-auto text-center py-20 px-4">
-        <h2 className="text-5xl font-bold text-green-900 mb-4">Tarım Makineleri & Yedek Parça</h2>
-        <p className="text-xl text-gray-600 mb-8">Traktor, çapa, dron yedek parçaları</p>
-        <button className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700">Alışverişe Başla</button>
+        )}
       </section>
 
-      <section className="max-w-6xl mx-auto py-20 px-4">
-        <h3 className="text-3xl font-bold mb-8">Öne Çıkan Ürünler</h3>
-        <div className="grid grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white border-2 border-green-200 p-6 rounded-lg">
-              <h4 className="font-bold mb-2 text-lg">{product.name}</h4>
-              <p className="text-green-600 text-2xl font-bold mb-4">₺{product.price.toLocaleString('tr-TR')}</p>
-              <button 
-                onClick={() => router.push(`/checkout?product=${product.name}&price=${product.price}`)}
-                className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full"
-              >
-                Satın Al
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <footer className="bg-gray-800 text-white py-8 mt-20 text-center">
-        <p>&copy; 2026 Ziraati. Tüm haklari saklıdır.</p>
+      <footer className="bg-green-800 text-white py-8 mt-16 text-center">
+        <p>&copy; 2026 Ziraati. Tüm hakları saklıdır.</p>
       </footer>
     </div>
   );
 }
+
+export default Home;
