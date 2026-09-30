@@ -3,7 +3,7 @@ import { getSupabase } from './supabase';
 import type { Category, Product } from '@/types/product';
 
 const PRODUCT_FIELDS = `
-  id, slug, sku, name, price, description, image_url, stock, subcategory_id,
+  id, slug, sku, name, price, description, image_url, stock, side_required, subcategory_id,
   subcategories(name, slug, category_id, categories(name, slug))
 `;
 

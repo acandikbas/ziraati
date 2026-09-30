@@ -6,6 +6,7 @@ import { FREE_SHIPPING_THRESHOLD, shippingFee } from '@/lib/shipping';
 import { formatPrice, stockInfo, summarize } from '@/lib/format';
 import { ProductImage } from '@/components/ProductImage';
 import { StockBadge } from '@/components/StockBadge';
+import { AddToCart } from '@/components/AddToCart';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -71,22 +72,7 @@ export default async function ProductPage({ params }: Props) {
               : `🚚 ${formatPrice(FREE_SHIPPING_THRESHOLD)} ve üzeri siparişlerde kargo ücretsiz`}
           </p>
 
-          {available ? (
-            <Link
-              href={`/checkout?urun=${product.id}`}
-              className="rounded-lg bg-green-600 py-3 text-center text-lg font-bold text-white hover:bg-green-700"
-            >
-              Satın Al
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="cursor-not-allowed rounded-lg bg-gray-300 py-3 text-lg font-bold text-gray-600"
-            >
-              Tükendi
-            </button>
-          )}
+          <AddToCart productId={product.id} sideRequired={product.side_required} available={available} />
         </div>
       </div>
 

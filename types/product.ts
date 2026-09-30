@@ -23,6 +23,8 @@ export interface Product {
   image_url: string | null;
   /** null = stok takibi yapılmıyor (satışa açık kabul edilir) */
   stock: number | null;
+  /** Paketinde tek taraf olan ürünlerde müşteri Sağ/Sol seçer */
+  side_required: boolean;
   subcategory_id: number;
   subcategories: {
     name: string;

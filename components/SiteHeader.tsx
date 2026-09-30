@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/shipping';
 import { formatPrice } from '@/lib/format';
+import { CartLink } from './CartLink';
 
 export function SiteHeader() {
   return (
@@ -14,7 +15,10 @@ export function SiteHeader() {
             <span className="text-3xl font-bold">🌾 Ziraati</span>
             <span className="mt-1 block text-sm text-green-100">Tarım Makineleri &amp; Yedek Parça</span>
           </Link>
-          <SearchBox />
+          <div className="flex gap-3">
+            <SearchBox />
+            <CartLink />
+          </div>
         </div>
       </div>
     </header>
