@@ -24,17 +24,19 @@ export function SiteHeader() {
 /** JavaScript olmadan da çalışan basit arama formu: /?ara=... adresine gider. */
 function SearchBox() {
   return (
-    <form action="/" method="get" role="search" className="flex w-full sm:w-96">
+    <form action="/" method="get" role="search" className="flex w-full overflow-hidden rounded-lg bg-white shadow-sm sm:w-96">
       <label htmlFor="ara" className="sr-only">Ürün ara</label>
       <input
         id="ara"
         name="ara"
         type="search"
+        required
+        minLength={2}
         maxLength={60}
-        placeholder="Ürün adı veya OEM kodu (ör. 1672809M91)"
-        className="min-w-0 flex-1 rounded-l-lg border-0 px-4 py-2.5 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-300"
+        placeholder="Ürün adı veya OEM kodu"
+        className="min-w-0 flex-1 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-500 focus:outline-none"
       />
-      <button type="submit" className="rounded-r-lg bg-green-900 px-4 font-semibold hover:bg-green-950">
+      <button type="submit" className="bg-green-900 px-5 font-semibold text-white hover:bg-green-950">
         Ara
       </button>
     </form>

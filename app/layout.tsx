@@ -11,8 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // suppressHydrationWarning: tarayıcı eklentileri <html>'e kendi özelliklerini ekleyebiliyor;
+  // bu, zararsız "hydration mismatch" uyarısını bastırır (yalnızca <html> etiketi için geçerli).
   return (
-    <html lang="tr" className="h-full antialiased">
+    <html lang="tr" className="h-full antialiased" suppressHydrationWarning>
       <body className="flex min-h-full flex-col bg-gray-50 text-gray-900">
         <SiteHeader />
         <main className="flex-1">{children}</main>
