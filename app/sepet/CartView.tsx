@@ -215,6 +215,7 @@ function CityDistrict({ defaultCity, defaultDistrict }: { defaultCity?: string; 
         autoComplete="address-level1"
       />
       <Combobox
+        key={city /* il değişince ilçe kutusu tamamen sıfırlanır */}
         label="İlçe"
         name="district"
         options={districts}

@@ -42,11 +42,15 @@ export function Combobox({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
 
-  // Dışarıdan değer değişirse (ör. il değişince ilçe sıfırlanır) kutudaki yazı da güncellenir
+  // Değer değişince kutudaki yazıyı eşitle:
+  // - yeni bir seçim geldiyse doğru yazılışını göster ("konya" -> "Konya")
+  // - seçim dışarıdan sıfırlandıysa (il değişince ilçe) eski seçimin yazısını temizle
+  // - kullanıcı yazarken seçim düştüyse yazdığına dokunma
   const [prevValue, setPrevValue] = useState(value);
   if (prevValue !== value) {
     setPrevValue(value);
-    setText(value);
+    if (value) setText(value);
+    else if (prevValue && normalizeTr(text) === normalizeTr(prevValue)) setText('');
   }
 
   const filtered = useMemo(() => {
