@@ -7,10 +7,14 @@ export default async function Home({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { kategori } = await searchParams;
+  const { kategori, ara } = await searchParams;
   const selected = typeof kategori === 'string' && kategori ? kategori : undefined;
+  const query = typeof ara === 'string' ? ara.trim().slice(0, 60) : '';
 
-  const [categories, products] = await Promise.all([listCategories(), listProducts(selected)]);
+  const [categories, products] = await Promise.all([
+    listCategories(),
+    listProducts({ subcategorySlug: selected, search: query }),
+  ]);
   const subcategories = categories.flatMap(c => c.subcategories ?? []).filter(s => s.slug);
   const selectedName = subcategories.find(s => s.slug === selected)?.name;
 
@@ -27,7 +31,7 @@ export default async function Home({
 
       <section id="urunler" className="mx-auto max-w-6xl scroll-mt-4 px-4 py-10">
         <nav aria-label="Kategoriler" className="mb-8 flex flex-wrap gap-2">
-          <FilterChip href="/#urunler" active={!selected}>Tümü</FilterChip>
+          <FilterChip href="/#urunler" active={!selected && !query}>Tümü</FilterChip>
           {subcategories.map(s => (
             <FilterChip key={s.id} href={`/?kategori=${encodeURIComponent(s.slug!)}#urunler`} active={s.slug === selected}>
               {s.name}
@@ -36,13 +40,16 @@ export default async function Home({
         </nav>
 
         <h2 className="mb-6 text-2xl font-bold text-green-800">
-          {selectedName ?? 'Tüm Ürünler'}
+          {query ? `“${query}” için sonuçlar` : (selectedName ?? 'Tüm Ürünler')}
           <span className="ml-2 text-base font-normal text-gray-500">({products.length} ürün)</span>
+          {query && (
+            <Link href="/#urunler" className="ml-3 text-sm font-medium text-green-700 underline">Aramayı temizle</Link>
+          )}
         </h2>
 
         {products.length === 0 ? (
           <p className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-600">
-            Bu kategoride şu anda ürün yok.{' '}
+            {query ? 'Aramanızla eşleşen ürün bulunamadı. Farklı bir kelime ya da parça kodu deneyin.' : 'Bu kategoride şu anda ürün yok.'}{' '}
             <Link href="/#urunler" className="font-semibold text-green-700 underline">Tüm ürünlere dön</Link>
           </p>
         ) : (

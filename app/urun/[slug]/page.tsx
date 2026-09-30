@@ -1,26 +1,33 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getProduct } from '@/lib/catalog';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { getProduct, productHref } from '@/lib/catalog';
+import { FREE_SHIPPING_THRESHOLD, shippingFee } from '@/lib/shipping';
 import { formatPrice, stockInfo, summarize } from '@/lib/format';
 import { ProductImage } from '@/components/ProductImage';
 import { StockBadge } from '@/components/StockBadge';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = await getProduct((await params).id);
+  const product = await getProduct((await params).slug);
   if (!product) return { title: 'Ürün bulunamadı' };
   return {
     title: product.name,
     description: summarize(product.description),
+    alternates: { canonical: productHref(product) },
     openGraph: product.image_url ? { images: [product.image_url] } : undefined,
   };
 }
 
 export default async function ProductPage({ params }: Props) {
-  const product = await getProduct((await params).id);
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product) notFound();
+
+  // Eski /urun/11 gibi adresler okunaklı adrese kalıcı olarak yönlendirilir.
+  const canonical = productHref(product);
+  if (canonical !== `/urun/${slug}`) permanentRedirect(canonical);
 
   const { available } = stockInfo(product.stock);
   const sub = product.subcategories;
@@ -57,6 +64,12 @@ export default async function ProductPage({ params }: Props) {
             <p className="text-3xl font-bold text-green-700">{formatPrice(product.price)}</p>
             <StockBadge stock={product.stock} />
           </div>
+
+          <p className="text-sm text-gray-600">
+            {shippingFee(Number(product.price)) === 0
+              ? '🚚 Kargo ücretsiz'
+              : `🚚 ${formatPrice(FREE_SHIPPING_THRESHOLD)} ve üzeri siparişlerde kargo ücretsiz`}
+          </p>
 
           {available ? (
             <Link

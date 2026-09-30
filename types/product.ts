@@ -14,6 +14,8 @@ export interface Category {
 
 export interface Product {
   id: number;
+  /** Okunaklı adres parçası, ör. fiat-480-640-arka-stop-lambasi-komple-sag-sol */
+  slug: string | null;
   sku: string;
   name: string;
   price: number;

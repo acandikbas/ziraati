@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Product } from '@/types/product';
 import { formatPrice, stockInfo } from '@/lib/format';
+import { productHref } from '@/lib/catalog';
 import { ProductImage } from './ProductImage';
 import { StockBadge } from './StockBadge';
 
@@ -8,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
   const { available } = stockInfo(product.stock);
   return (
     <Link
-      href={`/urun/${product.id}`}
+      href={productHref(product)}
       className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-lg"
     >
       <div className={available ? '' : 'opacity-60'}>

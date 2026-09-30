@@ -1,15 +1,43 @@
 import Link from 'next/link';
+import { FREE_SHIPPING_THRESHOLD } from '@/lib/shipping';
+import { formatPrice } from '@/lib/format';
 
 export function SiteHeader() {
   return (
-    <header className="bg-gradient-to-r from-green-600 to-green-700 text-white">
-      <div className="mx-auto max-w-6xl px-4 py-5">
-        <Link href="/" className="inline-block">
-          <span className="text-3xl font-bold">🌾 Ziraati</span>
-          <span className="mt-1 block text-sm text-green-100">Tarım Makineleri &amp; Yedek Parça</span>
-        </Link>
+    <header>
+      <p className="bg-green-900 px-4 py-2 text-center text-sm font-medium text-green-50">
+        🚚 {formatPrice(FREE_SHIPPING_THRESHOLD)} ve üzeri siparişlerde kargo ücretsiz
+      </p>
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <Link href="/" className="inline-block">
+            <span className="text-3xl font-bold">🌾 Ziraati</span>
+            <span className="mt-1 block text-sm text-green-100">Tarım Makineleri &amp; Yedek Parça</span>
+          </Link>
+          <SearchBox />
+        </div>
       </div>
     </header>
+  );
+}
+
+/** JavaScript olmadan da çalışan basit arama formu: /?ara=... adresine gider. */
+function SearchBox() {
+  return (
+    <form action="/" method="get" role="search" className="flex w-full sm:w-96">
+      <label htmlFor="ara" className="sr-only">Ürün ara</label>
+      <input
+        id="ara"
+        name="ara"
+        type="search"
+        maxLength={60}
+        placeholder="Ürün adı veya OEM kodu (ör. 1672809M91)"
+        className="min-w-0 flex-1 rounded-l-lg border-0 px-4 py-2.5 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-300"
+      />
+      <button type="submit" className="rounded-r-lg bg-green-900 px-4 font-semibold hover:bg-green-950">
+        Ara
+      </button>
+    </form>
   );
 }
 
