@@ -5,7 +5,7 @@ import { productHref } from '@/lib/catalog';
 import { ProductImage } from './ProductImage';
 import { StockBadge } from './StockBadge';
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, eager = false }: { product: Product; eager?: boolean }) {
   const { available } = stockInfo(product.stock);
   return (
     <Link
@@ -17,6 +17,7 @@ export function ProductCard({ product }: { product: Product }) {
           src={product.image_url}
           alt={product.name}
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          eager={eager}
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 border-t border-gray-100 p-4">
