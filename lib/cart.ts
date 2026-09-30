@@ -91,3 +91,9 @@ export function removeCartItem(index: number) {
 export function clearCart() {
   write([]);
 }
+
+/** Sepet önizleme panelini açar (CartDrawer dinler). */
+export const OPEN_DRAWER_EVENT = 'ziraati-sepet-onizleme';
+export function openCartDrawer() {
+  window.dispatchEvent(new Event(OPEN_DRAWER_EVENT));
+}

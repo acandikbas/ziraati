@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { addToCart, type Side } from '@/lib/cart';
+import { addToCart, openCartDrawer, type Side } from '@/lib/cart';
 
 export function AddToCart({
   productId,
@@ -34,6 +34,7 @@ export function AddToCart({
     addToCart({ productId, quantity, side: sideRequired ? side : null });
     setError(null);
     setAdded(true);
+    openCartDrawer();
   }
 
   return (

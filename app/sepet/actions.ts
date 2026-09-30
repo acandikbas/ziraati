@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { quoteCart, sanitizeCart, type CartInput, type Quote } from '@/lib/orders';
+import { isValidLocation } from '@/lib/turkey';
 
 /** Sepet sayfası için güncel fiyat/stok özeti. */
 export async function getQuote(rawItems: unknown): Promise<Quote | { error: string }> {
@@ -34,6 +35,9 @@ export async function placeOrder(_prev: OrderFormState, formData: FormData): Pro
     items = [];
   }
   if (items.length === 0) return { error: 'Sepetiniz boş.', values };
+  if (!isValidLocation(values.city, values.district)) {
+    return { error: 'Lütfen listeden il ve ilçe seçin.', values };
+  }
   if (formData.get('onay') !== 'on') {
     return { error: 'Devam etmek için sipariş bilgilerinin doğruluğunu onaylayın.', values };
   }

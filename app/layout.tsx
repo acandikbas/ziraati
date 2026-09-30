@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SiteFooter, SiteHeader } from '@/components/SiteHeader';
+import { CartDrawer } from '@/components/CartDrawer';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
+        <CartDrawer />
       </body>
     </html>
   );

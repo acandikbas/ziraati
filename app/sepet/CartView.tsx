@@ -2,16 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useActionState, useEffect, useState, useSyncExternalStore } from 'react';
+import { useActionState, useState, useSyncExternalStore } from 'react';
 import { useCart, removeCartItem, updateCartItem, type CartItem } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import type { Quote } from '@/lib/orders';
-import { getQuote, placeOrder, type OrderFormState } from './actions';
-
-type QuoteState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; quote: Quote; key: string };
+import { useQuote } from '@/lib/useQuote';
+import { CITIES, districtsOf } from '@/lib/turkey';
+import { placeOrder, type OrderFormState } from './actions';
 
 const noop = () => () => {};
 
@@ -19,19 +16,7 @@ export function CartView() {
   const items = useCart();
   // Sepet tarayıcıda durur; sunucuda render edilirken "sepet boş" diye yanıp sönmesin
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
-  const [state, setState] = useState<QuoteState>({ status: 'loading' });
-  const key = JSON.stringify(items);
-
-  useEffect(() => {
-    let cancelled = false;
-    getQuote(JSON.parse(key)).then(r => {
-      if (cancelled) return;
-      setState('error' in r ? { status: 'error', message: r.error } : { status: 'ready', quote: r, key });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [key]);
+  const { state, stale } = useQuote(items);
 
   if (!hydrated) return <p className="text-gray-600">Sepet yükleniyor…</p>;
   if (items.length === 0) {
@@ -49,7 +34,6 @@ export function CartView() {
 
   const { quote } = state;
   // Sepet değişti ama yeni fiyatlar henüz gelmedi: eski satırlar kısa süre soluk ve kilitli gösterilir
-  const stale = state.key !== key;
   return (
     <div className={`grid gap-8 lg:grid-cols-[1fr_380px] ${stale ? 'pointer-events-none opacity-60' : ''}`} aria-busy={stale}>
       <section aria-label="Sepetteki ürünler" className="flex flex-col gap-4">
@@ -153,10 +137,7 @@ function CheckoutForm({ items }: { items: CartItem[] }) {
       <Field label="Ad Soyad" name="name" autoComplete="name" defaultValue={v.name} minLength={3} maxLength={100} />
       <Field label="Cep Telefonu" name="phone" type="tel" autoComplete="tel" placeholder="05xx xxx xx xx" defaultValue={v.phone} />
       <Field label="E-posta" name="email" type="email" autoComplete="email" defaultValue={v.email} maxLength={200} />
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="İl" name="city" autoComplete="address-level1" defaultValue={v.city} minLength={2} maxLength={50} />
-        <Field label="İlçe" name="district" autoComplete="address-level2" defaultValue={v.district} minLength={2} maxLength={50} />
-      </div>
+      <CityDistrict defaultCity={v.city} defaultDistrict={v.district} />
       <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
         Açık Adres
         <textarea
@@ -203,5 +184,47 @@ function Field({
       {label}
       <input name={name} type={type} required className="rounded-lg border border-gray-300 px-3 py-2 font-normal" {...rest} />
     </label>
+  );
+}
+
+/** İl seçilince yalnızca o ilin ilçeleri listelenir. */
+function CityDistrict({ defaultCity, defaultDistrict }: { defaultCity?: string; defaultDistrict?: string }) {
+  const [city, setCity] = useState(defaultCity && CITIES.includes(defaultCity) ? defaultCity : '');
+  const districts = districtsOf(city);
+  const [district, setDistrict] = useState(defaultDistrict && districts.includes(defaultDistrict) ? defaultDistrict : '');
+  const select = 'rounded-lg border border-gray-300 bg-white px-3 py-2 font-normal disabled:bg-gray-100';
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
+        İl
+        <select
+          name="city"
+          required
+          autoComplete="address-level1"
+          value={city}
+          onChange={e => { setCity(e.target.value); setDistrict(''); }}
+          className={select}
+        >
+          <option value="">İl seçin</option>
+          {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
+        İlçe
+        <select
+          name="district"
+          required
+          autoComplete="address-level2"
+          value={district}
+          onChange={e => setDistrict(e.target.value)}
+          disabled={!city}
+          className={select}
+        >
+          <option value="">{city ? 'İlçe seçin' : 'Önce il seçin'}</option>
+          {districts.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+      </label>
+    </div>
   );
 }
