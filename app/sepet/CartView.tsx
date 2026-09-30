@@ -8,6 +8,7 @@ import { formatPrice } from '@/lib/format';
 import type { Quote } from '@/lib/orders';
 import { useQuote } from '@/lib/useQuote';
 import { CITIES, districtsOf } from '@/lib/turkey';
+import { Combobox } from '@/components/Combobox';
 import { placeOrder, type OrderFormState } from './actions';
 
 const noop = () => () => {};
@@ -196,44 +197,33 @@ function Field({
   );
 }
 
-/** İl seçilince yalnızca o ilin ilçeleri listelenir. */
+/** İl ve ilçe yazarak aranır; il seçilince yalnızca o ilin ilçeleri listelenir. */
 function CityDistrict({ defaultCity, defaultDistrict }: { defaultCity?: string; defaultDistrict?: string }) {
   const [city, setCity] = useState(defaultCity && CITIES.includes(defaultCity) ? defaultCity : '');
   const districts = districtsOf(city);
   const [district, setDistrict] = useState(defaultDistrict && districts.includes(defaultDistrict) ? defaultDistrict : '');
-  const select = 'rounded-lg border border-gray-300 bg-white px-3 py-2 font-normal disabled:bg-gray-100';
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
-        İl
-        <select
-          name="city"
-          required
-          autoComplete="address-level1"
-          value={city}
-          onChange={e => { setCity(e.target.value); setDistrict(''); }}
-          className={select}
-        >
-          <option value="">İl seçin</option>
-          {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
-        İlçe
-        <select
-          name="district"
-          required
-          autoComplete="address-level2"
-          value={district}
-          onChange={e => setDistrict(e.target.value)}
-          disabled={!city}
-          className={select}
-        >
-          <option value="">{city ? 'İlçe seçin' : 'Önce il seçin'}</option>
-          {districts.map(d => <option key={d} value={d}>{d}</option>)}
-        </select>
-      </label>
+      <Combobox
+        label="İl"
+        name="city"
+        options={CITIES}
+        value={city}
+        onChange={c => { if (c !== city) { setCity(c); setDistrict(''); } }}
+        placeholder="İl yazın veya seçin"
+        autoComplete="address-level1"
+      />
+      <Combobox
+        label="İlçe"
+        name="district"
+        options={districts}
+        value={district}
+        onChange={setDistrict}
+        placeholder={city ? 'İlçe yazın veya seçin' : 'Önce il seçin'}
+        disabled={!city}
+        autoComplete="address-level2"
+      />
     </div>
   );
 }
