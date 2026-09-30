@@ -27,11 +27,11 @@ cross join public.categories c
 where c.slug = 'aydinlatma'
   and not exists (select 1 from public.subcategories s where s.slug = v.slug);
 
--- 3) Ürünler
-insert into public.products (name, price, description, image_url, stock, subcategory_id)
-select v.name, v.price, v.description, v.image_url, null, s.id
+-- 3) Ürünler (SKU = stok kodu; istediğiniz zaman Table Editor'den değiştirebilirsiniz)
+insert into public.products (sku, name, price, description, image_url, stock, subcategory_id)
+select v.sku, v.name, v.price, v.description, v.image_url, null, s.id
 from (values
-  ($q$12V - 24V Döner Tepe Lambası - Sarı Flaşörlü Traktör Çakarı$q$, 500.00, $q$12V-24V Traktör ve İş Makinesi Yarıklı/Mıknatıslı Sarı LED Tepe Lambası
+  ($q$ZR-TEP-LAMBA$q$, $q$12V - 24V Döner Tepe Lambası - Sarı Flaşörlü Traktör Çakarı$q$, 500.00, $q$12V-24V Traktör ve İş Makinesi Yarıklı/Mıknatıslı Sarı LED Tepe Lambası
 
 Karayolu geçişlerinde, gece çalışmalarında ve saha içi güvenlik standartlarında yüksek görünürlük sağlamak üzere tasarlanmıştır. Güçlü LED çakar modülleri sayesinde hem gündüz hem de karanlıkta uzak mesafelerden kolayca fark edilir.
 
@@ -51,7 +51,7 @@ Bağlantı: Çakmaklık Soketli (Sarmal Kablo) / Boru Geçme Tipi
 📦 Paket İçeriği:
 
 1 Adet LED Döner Tepe Lambası / Çakar$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/2075b446-42a8-4202-b0ae-1895518fe30e/image_1080.webp$q$, $q$tepe-lambalari$q$),
-  ($q$12V - 24V Kare LED Traktör Çalışma Projektörü - Su Geçirmez Off-Road Taraklı Far Sis Lambası$q$, 500.00, $q$12V-24V Traktör ve İş Makinesi Yüksek Performanslı Kare LED Çalışma Projektörü
+  ($q$ZR-CAL-KARE$q$, $q$12V - 24V Kare LED Traktör Çalışma Projektörü - Su Geçirmez Off-Road Taraklı Far Sis Lambası$q$, 500.00, $q$12V-24V Traktör ve İş Makinesi Yüksek Performanslı Kare LED Çalışma Projektörü
 
 Gece aydınlatmasının yetersiz kaldığı zorlu tarla ve saha şartlarında maksimum görüş açısı sağlamak için özel olarak tasarlanmıştır. Güçlü LED çipleri ve odaklı mercek yapısı sayesinde tarlada en koyu karanlıkta bile geniş ve net bir aydınlatma sunar.
 
@@ -82,7 +82,7 @@ Diğer: İş makineleri, kepçeler, kamyon, biçerdöver, ATV ve Off-Road araçl
 1 Takım Paslanmaz Montaj Ayağı ve Bağlantı Cıvataları
 
 Sipariş Notu: Ürünümüz tak-çalıştır yapısındadır. Bağlantı yaparken kablo kutuplarına (+ / -) dikkat edilmesi yeterlidir.$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/59926c75-6c42-4fd5-a546-18b1aae81326/image_1080.webp$q$, $q$calisma-lambalari$q$),
-  ($q$12V - 24V Yuvarlak LED Traktör Çalışma Projektörü - Su Geçirmez Off-Road Taraklı Far Sis Lambası$q$, 400.00, $q$Traktör ve İş Makineleri İçin Yuvarlak LED Çalışma Projektörü (Çift Voltaj / Taraklı Soğutmalı)
+  ($q$ZR-CAL-YUVARLAK$q$, $q$12V - 24V Yuvarlak LED Traktör Çalışma Projektörü - Su Geçirmez Off-Road Taraklı Far Sis Lambası$q$, 400.00, $q$Traktör ve İş Makineleri İçin Yuvarlak LED Çalışma Projektörü (Çift Voltaj / Taraklı Soğutmalı)
 
 Traktör, biçerdöver, çapa makinesi ve off-road araçları için özel tasarlanmış, yüksek aydınlatma gücüne sahip yuvarlak LED çalışma farıdır. Gece tarlada, zorlu arazi koşullarında veya sisli havalarda geniş ve net bir görüş alanı sağlayarak çalışma güvenliğinizi en üst seviyeye çıkarır.
 
@@ -106,7 +106,7 @@ Uyumlu Araçlar: Tüm Traktör Modelleri (Massey Ferguson, New Holland, TÜMOSAN
 
 1 Adet Yuvarlak LED Çalışma Projektörü
 1 Takım Ayarlanabilir Montaj Ayağı, Cıvata ve Somun Seti$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/57fbc933-81a8-4b0c-b70d-d200cb2048c8/image_1080.webp$q$, $q$calisma-lambalari$q$),
-  ($q$Döner Tepe Lamba Camı (Sarı / 3 Cıvatalı) - Traktör ve İş Makinesi Çakar Camı (Universal)$q$, 200.00, $q$Traktör ve İş Makineleri İçin Döner Tepe Lambası Yedek Camı (3 Cıvata Bağlantılı)
+  ($q$ZR-TEP-CAM$q$, $q$Döner Tepe Lamba Camı (Sarı / 3 Cıvatalı) - Traktör ve İş Makinesi Çakar Camı (Universal)$q$, 200.00, $q$Traktör ve İş Makineleri İçin Döner Tepe Lambası Yedek Camı (3 Cıvata Bağlantılı)
 
 Traktör, biçerdöver, kepçe ve kurtarıcı araçlarda kullanılan 3 cıvatalı standart döner tepe lambaları (çakarlar) ile tam uyumlu yedek dış camdır. Tarlada veya sahada kırılan, çatlayan veya güneşten matlaşan lamba camınızı komple tepe lambası satın almadan, ekonomik bir şekilde yenilemenizi sağlar.
 
@@ -127,7 +127,7 @@ Malzeme: Darbeye Dayanıklı Sert Polikarbon Lens
 📦 Paket İçeriği:
 
 1 Adet Döner Tepe Lamba Camı$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/2c0cf8cc-c07d-43f6-bf68-fdff0d0d5817/image_1080.webp$q$, $q$tepe-lambalari$q$),
-  ($q$Fiat 480 - 640 Arka Sinyal / Stop Lamba Camı (Sarı / kırmızı Çiftli Set)$q$, 150.00, $q$Fiat 480 - 640 Serisi Arka Sinyal ve Stop Lamba Camı (Sarı / Kırmızı Çiftli Set)
+  ($q$ZR-FIAT-ARKA-CAM$q$, $q$Fiat 480 - 640 Arka Sinyal / Stop Lamba Camı (Sarı / kırmızı Çiftli Set)$q$, 150.00, $q$Fiat 480 - 640 Serisi Arka Sinyal ve Stop Lamba Camı (Sarı / Kırmızı Çiftli Set)
 
 Fiat 480, 540, 640 ve efsane serilerle tam uyumlu, sadece dış cam yenilemesi yapmak isteyenler için tasarlanmış sağ ve sol çiftli yedek cam setidir. Komple duy aksamını değiştirmeden; çatlayan, matlaşan veya kırılan dış camlarınızı pratik şekilde yenilemenizi sağlar.
 
@@ -149,7 +149,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet Sağ Arka Stop/Sinyal Lamba Camı
 1 Adet Sol Arka Stop/Sinyal Lamba Camı$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/7b076060-7ec7-464e-ad36-13ad6469f175/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$Fiat 480 - 640 Arka Stop Lambası Komple (Sağ / Sol)$q$, 700.00, $q$Fiat 480 - 640 Serisi Komple Arka Stop Lambası (Sağ / Sol)
+  ($q$ZR-FIAT-ARKA-KOMPLE$q$, $q$Fiat 480 - 640 Arka Stop Lambası Komple (Sağ / Sol)$q$, 700.00, $q$Fiat 480 - 640 Serisi Komple Arka Stop Lambası (Sağ / Sol)
 
 Fiat 480, 540, 640 ve efsane seri traktörlerinizle tam uyumlu, duy aksamı ve camı dahil komple arka stop lambası ünitesidir. Zamanla kırılan, matlaşan veya su alan eski stop lambalarınızı tadilat gerektirmeden doğrudan yenilemenizi sağlar.
 
@@ -171,7 +171,7 @@ Kasa Malzemesi: Isıya ve Darbeye Dayanıklı ABS Gövde + PMMA Lens
 
 1 Adet Fiat Komple Arka Stop Lambası (Seçilen Taraf: Sağ veya Sol)
 Sızdırmazlık Contası ve Bağlantı Civataları$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/ec37134d-1ce4-4820-ae04-92df8633a8c3/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$Fiat 480 - 640 Ön Sinyal / Park Lamba Camı (Sağ / Sol Set) - OEM: 4247213 / 4247214$q$, 200.00, $q$Fiat Efsane Seriler İçin Ön Sinyal ve Park Lamba Camı Seti (OEM Kalitesinde)
+  ($q$ZR-FIAT-ON-CAM$q$, $q$Fiat 480 - 640 Ön Sinyal / Park Lamba Camı (Sağ / Sol Set) - OEM: 4247213 / 4247214$q$, 200.00, $q$Fiat Efsane Seriler İçin Ön Sinyal ve Park Lamba Camı Seti (OEM Kalitesinde)
 
 Fiat 480, 540, 640 ve efsane serilerle tam uyumlu, ön çamurluk veya kaput yanındaki park/sinyal lambaları için özel üretilmiş sağ ve sol yedek cam setidir. Komple duy aksamını değiştirmeden; çatlayan, matlaşan veya kırılan dış camlarınızı pratik ve ekonomik bir şekilde yenilemenizi sağlar.
 
@@ -196,7 +196,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet Fiat Sağ Ön Park-Sinyal Lamba Camı (4247214)
 1 Adet Fiat Sol Ön Park-Sinyal Lamba Camı (4247213)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/f6b7128b-f746-45e3-98ad-62e0c64f19ba/image_1080.webp$q$, $q$sinyal-park-lambalari$q$),
-  ($q$Fiat 480 - 640 Ön Sinyal / Park Lambası Komple (Sağ / Sol)$q$, 700.00, $q$Fiat 480 - 640 Serisi Komple Ön Sinyal ve Park Lambası (Sağ / Sol Uyumlu)
+  ($q$ZR-FIAT-ON-KOMPLE$q$, $q$Fiat 480 - 640 Ön Sinyal / Park Lambası Komple (Sağ / Sol)$q$, 700.00, $q$Fiat 480 - 640 Serisi Komple Ön Sinyal ve Park Lambası (Sağ / Sol Uyumlu)
 
 Fiat 480, 540, 640 ve efsane serilerle birebir uyumlu, ön çamurluk veya kaput yanına monte edilen komple ön sinyal ve park lambası ünitesidir. Güneşten matlaşan, kırılan veya tesisatı bozulan eski lambalarınızı kesme-biçme yapmadan doğrudan yenilemenizi sağlar.
 
@@ -218,7 +218,7 @@ Malzeme: Isıya ve Darbeye Dayanıklı ABS Gövde + Şeffaf/Sarı PMMA Lens
 
 1 Adet Fiat Komple Ön Sinyal / Park Lambası (Seçilen Yön: Sağ veya Sol)
 Sızdırmazlık Contası ve Montaj Somunları/Vidaları$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/e8d8cb2d-78b6-4036-95e0-772f2b55e31b/image_1080.webp$q$, $q$sinyal-park-lambalari$q$),
-  ($q$Massey Ferguson 240 ve Efsane Seriler İçin Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91$q$, 150.00, $q$Massey Ferguson Efsane Seriler İçin Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91
+  ($q$ZR-MF-ARKA-CAM$q$, $q$Massey Ferguson 240 ve Efsane Seriler İçin Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91$q$, 150.00, $q$Massey Ferguson Efsane Seriler İçin Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91
 
 Massey Ferguson’un efsaneleşmiş 100 ve 200 serisi traktörlerinizle tam uyumlu, OEM standartlarında üretilmiş sağ ve sol arka stop lamba camı setidir. Zamanla tarlada kırılan, güneşten matlaşan veya çatlayan camlarınızı komple lamba gövdesini değiştirmeden, ekonomik ve pratik şekilde yenilemenizi sağlar.
 
@@ -245,7 +245,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet Massey Ferguson Sağ Arka Stop Lamba Camı (1672809M91)
 1 Adet Massey Ferguson Sol Arka Stop Lamba Camı (1672810M91)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/9962d56c-9284-4d8f-bf58-8311d800597e/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$Massey Ferguson 240 ve Efsane Seriler İçin Komple Arka Stop Lambası (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91$q$, 1000.00, $q$Massey Ferguson Efsane Seriler İçin Komple Arka Stop Lambası Seti (OEM Kalitesinde)
+  ($q$ZR-MF-ARKA-KOMPLE$q$, $q$Massey Ferguson 240 ve Efsane Seriler İçin Komple Arka Stop Lambası (Sağ / Sol Set) - OEM: 1672809M91 / 1672810M91$q$, 1000.00, $q$Massey Ferguson Efsane Seriler İçin Komple Arka Stop Lambası Seti (OEM Kalitesinde)
 
 Massey Ferguson’un efsaneleşmiş 100 ve 200 serisi traktörlerinizle tam uyumlu, iç duy aksamı, sızdırmazlık contası ve dış camı dahil komple arka stop lambası setidir. Zamanla tarlada kırılan, tesisatı bozulan veya su alan eski lamba ünitelerinizi kesme-biçme yapmadan doğrudan yenilemenizi sağlar.
 
@@ -284,7 +284,7 @@ Paket Tipi: Çiftli Set (Sağ + Sol Takım Komple)
 1 Adet Massey Ferguson Komple Sağ Arka Stop Lambası (1672809M91)
 
 1 Adet Massey Ferguson Komple Sol Arka Stop Lambası (1672810M91)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/86b1ca79-12ae-460b-be1b-1e6a639969bc/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$Massey Ferguson 240 ve Efsane Seriler İçin Komple Ön Park - Sinyal Lambası (Sağ / Sol Set) - OEM: 1672807M91 / 1672808M91$q$, 1000.00, $q$Massey Ferguson Efsane Seriler İçin Komple Ön Park ve Sinyal Lambası Seti (OEM Kalitesinde)
+  ($q$ZR-MF-ON-KOMPLE$q$, $q$Massey Ferguson 240 ve Efsane Seriler İçin Komple Ön Park - Sinyal Lambası (Sağ / Sol Set) - OEM: 1672807M91 / 1672808M91$q$, 1000.00, $q$Massey Ferguson Efsane Seriler İçin Komple Ön Park ve Sinyal Lambası Seti (OEM Kalitesinde)
 
 Massey Ferguson’un efsaneleşmiş 100 ve 200 serisi traktörlerinizle tam uyumlu, iç duy aksamı, sızdırmazlık contası ve dış camı dahil komple ön park/sinyal lambası setidir. Zamanla tarlada kırılan, tesisatı bozulan veya su alan eski lamba ünitelerinizi kesme-biçme yapmadan doğrudan yenilemenizi sağlar.
 
@@ -311,7 +311,7 @@ Paket Tipi: Çiftli Set (Sağ + Sol Takım Komple)
 
 1 Adet Massey Ferguson Komple Sağ Ön Park-Sinyal Lambası (1672807M91)
 1 Adet Massey Ferguson Komple Sol Ön Park-Sinyal Lambası (1672808M91)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/08accdac-ba67-442c-9fef-2552305e25da/image_1080.webp$q$, $q$sinyal-park-lambalari$q$),
-  ($q$Massey Ferguson Ön Park - Sinyal Lamba Camı (Sarı / Şeffaf Çiftli Set) - OEM: 1672807M1 / 1672808M1$q$, 150.00, $q$Massey Ferguson Efsane Seriler İçin Ön Park ve Sinyal Lamba Camı Seti (OEM Kalitesinde)
+  ($q$ZR-MF-ON-CAM$q$, $q$Massey Ferguson Ön Park - Sinyal Lamba Camı (Sarı / Şeffaf Çiftli Set) - OEM: 1672807M1 / 1672808M1$q$, 150.00, $q$Massey Ferguson Efsane Seriler İçin Ön Park ve Sinyal Lamba Camı Seti (OEM Kalitesinde)
 
 Massey Ferguson’un 100 ve 200 serisi efsane traktörleri ile tam uyumlu, ön çamurluk/kaput yanındaki park ve sinyal lambaları için özel üretilmiş sağ ve sol yedek cam setidir. Zamanla tarlada kırılan, güneşten matlaşan veya çatlayan camlarınızı komple lamba duyunu değiştirmeden pratik ve ekonomik bir şekilde yenilemenizi sağlar.
 
@@ -338,7 +338,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet Massey Ferguson Sağ Ön Park-Sinyal Lamba Camı (1672807M1)
 1 Adet Massey Ferguson Sol Ön Park-Sinyal Lamba Camı (1672808M1)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/e1e099cb-54b4-4970-a474-7f0272f9b000/image_1080.webp$q$, $q$sinyal-park-lambalari$q$),
-  ($q$New Holland TT50 Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 5183350 / 5183351$q$, 200.00, $q$New Holland TT Serisi İçin Arka Stop Lamba Camı Seti (OEM Kalitesinde)
+  ($q$ZR-NH-ARKA-CAM$q$, $q$New Holland TT50 Arka Stop Lamba Camı (Sağ / Sol Set) - OEM: 5183350 / 5183351$q$, 200.00, $q$New Holland TT Serisi İçin Arka Stop Lamba Camı Seti (OEM Kalitesinde)
 
 New Holland TT50 ve TT serisi yerli üretim traktörlerinizle tam uyumlu, OEM standartlarında üretilmiş sağ ve sol arka stop lamba camı setidir. Zamanla tarlada kırılan, güneşten matlaşan veya çatlayan camlarınızı komple lamba gövdesini değiştirmeden, ekonomik ve pratik şekilde yenilemenizi sağlar.
 
@@ -366,7 +366,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet New Holland Sağ Arka Stop Lamba Camı (5183350)
 1 Adet New Holland Sol Arka Stop Lamba Camı (5183351)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/502422ba-3602-406d-b53a-ac32d8bfcbd1/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$New Holland TT50 Arka Stop Lambası Komple (Sağ / Sol Set) - OEM: 5183348 / 5183349$q$, 2000.00, $q$New Holland TT Serisi İçin Komple Arka Stop Lambası Seti (OEM Kalitesinde)
+  ($q$ZR-NH-ARKA-KOMPLE$q$, $q$New Holland TT50 Arka Stop Lambası Komple (Sağ / Sol Set) - OEM: 5183348 / 5183349$q$, 2000.00, $q$New Holland TT Serisi İçin Komple Arka Stop Lambası Seti (OEM Kalitesinde)
 
 New Holland TT50 ve TT serisi traktörlerinizle tam uyumlu, duy aksamı, sızdırmazlık contası ve dış camı dahil komple arka stop lambası setidir. Kırılan, tesisatı bozulan veya su alan eski lamba ünitelerinizi kesme-biçme yapmadan doğrudan yenilemenizi sağlar.
 
@@ -394,7 +394,7 @@ Paket Tipi: Çiftli Set (Sağ + Sol Takım Komple)
 
 1 Adet New Holland Komple Sağ Arka Stop Lambası (5183348)
 1 Adet New Holland Komple Sol Arka Stop Lambası (5183349)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/6ee2cac5-08fd-48aa-a055-b008475ba1b0/image_1080.webp$q$, $q$stop-lambalari$q$),
-  ($q$New Holland TT50 Ön Park - Sinyal Lamba Camı (Sağ / Sol Set) - OEM: 5174542 / 5174543$q$, 300.00, $q$New Holland TT Serisi İçin Ön Park ve Sinyal Lamba Camı Seti (OEM Kalitesinde)
+  ($q$ZR-NH-ON-CAM$q$, $q$New Holland TT50 Ön Park - Sinyal Lamba Camı (Sağ / Sol Set) - OEM: 5174542 / 5174543$q$, 300.00, $q$New Holland TT Serisi İçin Ön Park ve Sinyal Lamba Camı Seti (OEM Kalitesinde)
 
 New Holland TT50 ve TT serisi traktörlerinizle tam uyumlu, ön çamurluk ve kaput yanındaki park/sinyal lambaları için özel üretilmiş sağ ve sol yedek cam setidir. Zamanla tarlada kırılan, güneşten matlaşan veya çatlayan camlarınızı komple lamba gövdesini değiştirmeden, ekonomik ve pratik şekilde yenilemenizi sağlar.
 
@@ -422,7 +422,7 @@ Malzeme: Darbeye Dayanıklı Akrilik Lens (PMMA)
 
 1 Adet New Holland Sağ Ön Park-Sinyal Lamba Camı (5174542)
 1 Adet New Holland Sol Ön Park-Sinyal Lamba Camı (5174543)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/212bc454-5546-4508-b03e-e1ed72a9eed9/image_1080.webp$q$, $q$sinyal-park-lambalari$q$),
-  ($q$New Holland TT50 Ön Park - Sinyal Lambası Komple (Sağ / Sol Set) - OEM: 5174540 / 5174541$q$, 2000.00, $q$New Holland TT Serisi İçin Komple Ön Park ve Sinyal Lambası Seti (OEM Kalitesinde)
+  ($q$ZR-NH-ON-KOMPLE$q$, $q$New Holland TT50 Ön Park - Sinyal Lambası Komple (Sağ / Sol Set) - OEM: 5174540 / 5174541$q$, 2000.00, $q$New Holland TT Serisi İçin Komple Ön Park ve Sinyal Lambası Seti (OEM Kalitesinde)
 
 New Holland TT50 ve TT serisi traktörlerinizle tam uyumlu, duy aksamı, bağlantı kabloları ve dış camı dahil komple ön park/sinyal lambası setidir. Kırılan, tesisatı bozulan veya su alan eski lamba ünitelerinizi kesme-biçme yapmadan doğrudan yenilemenizi sağlar.
 
@@ -450,9 +450,11 @@ Paket Tipi: Çiftli Set (Sağ + Sol Takım Komple)
 
 1 Adet New Holland Komple Sağ Ön Park-Sinyal Lambası (5174540)
 1 Adet New Holland Komple Sol Ön Park-Sinyal Lambası (5174541)$q$, $q$https://cdn.myikas.com/images/69ebdce8-db70-4968-b78c-3bda2b8b93c0/908f4af3-cb9c-4c2a-8a09-1b3356cc2c8d/image_1080.webp$q$, $q$sinyal-park-lambalari$q$)
-) as v(name, price, description, image_url, sub_slug)
+) as v(sku, name, price, description, image_url, sub_slug)
 join public.subcategories s on s.slug = v.sub_slug
-where not exists (select 1 from public.products p where p.name = v.name);
+where not exists (
+  select 1 from public.products p where p.sku = v.sku or p.name = v.name
+);
 
 commit;
 
