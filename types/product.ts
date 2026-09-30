@@ -1,22 +1,31 @@
+export interface Subcategory {
+  id: number;
+  name: string;
+  slug: string | null;
+}
+
 export interface Category {
-  id: number | string;
+  id: number;
   name: string;
   slug: string | null;
   description: string | null;
-  subcategories: { id: number | string; name: string; slug: string | null }[] | null;
+  subcategories: Subcategory[] | null;
 }
 
 export interface Product {
-  id: number | string;
+  id: number;
+  sku: string;
   name: string;
   price: number;
   description: string | null;
   image_url: string | null;
+  /** null = stok takibi yapılmıyor (satışa açık kabul edilir) */
   stock: number | null;
-  subcategory_id: number | string | null;
-  subcategories?: {
+  subcategory_id: number;
+  subcategories: {
     name: string;
-    category_id: number | string;
-    categories: { name: string } | null;
+    slug: string | null;
+    category_id: number;
+    categories: { name: string; slug: string | null } | null;
   } | null;
 }
