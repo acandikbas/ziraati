@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useActionState, useState, useSyncExternalStore } from 'react';
+import { startTransition, useActionState, useState, useSyncExternalStore } from 'react';
 import { useCart, removeCartItem, updateCartItem, type CartItem } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import type { Quote } from '@/lib/orders';
@@ -130,7 +130,16 @@ function CheckoutForm({ items }: { items: CartItem[] }) {
   const v = state.values;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6">
+    <form
+      // action={...} yerine onSubmit: React 19 action ile gönderilen formu hata durumunda da
+      // sıfırlıyor; il/ilçe seçimleri kaybolmasın diye form elle gönderilir.
+      onSubmit={e => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => formAction(data));
+      }}
+      className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6"
+    >
       <h2 className="text-lg font-bold text-gray-900">Teslimat Bilgileri</h2>
       <input type="hidden" name="items" value={JSON.stringify(items)} />
 
