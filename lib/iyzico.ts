@@ -1,3 +1,6 @@
+// Bu dosya yalnızca sunucuda çalışır; tarayıcı koduna eklenirse derleme hata verir.
+import 'server-only';
+
 import { createHmac, randomBytes } from 'node:crypto';
 
 /**

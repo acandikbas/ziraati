@@ -1,3 +1,6 @@
+// Bu dosya yalnızca sunucuda çalışır; tarayıcı koduna eklenirse derleme hata verir.
+import 'server-only';
+
 import { getSupabaseAdmin } from './supabase-admin';
 import { iyzicoConfig, initializeCheckoutForm, retrieveCheckoutForm, type BasketItem } from './iyzico';
 
