@@ -22,6 +22,7 @@ export default async function OrderPage({
   if (!order) notFound();
   const online = paymentsEnabled();
   const paid = order.status !== 'odeme_bekliyor' && order.status !== 'iptal';
+  const failed = odeme === 'basarisiz' || odeme === 'hata';
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -44,8 +45,17 @@ export default async function OrderPage({
           </p>
         </div>
       ) : (
-        <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-6 text-center">
-          <h1 className="mb-2 text-2xl font-bold text-amber-900">
+        <div
+          role={failed ? 'alert' : undefined}
+          className={`mb-8 rounded-lg border p-6 text-center ${failed ? 'border-red-300 bg-red-50' : 'border-amber-200 bg-amber-50'}`}
+        >
+          {failed && (
+            <svg aria-hidden="true" viewBox="0 0 64 64" className="mx-auto mb-3 h-20 w-20">
+              <circle cx="32" cy="32" r="30" fill="#dc2626" />
+              <path d="M21 21 43 43M43 21 21 43" stroke="#fff" strokeWidth="6" strokeLinecap="round" />
+            </svg>
+          )}
+          <h1 className={`mb-2 text-2xl font-bold ${failed ? 'text-red-800' : 'text-amber-900'}`}>
             {odeme === 'basarisiz' ? 'Ödeme tamamlanamadı' : odeme === 'hata' ? 'Ödeme sayfası açılamadı' : 'Ödeme bekleniyor'}
           </h1>
           <p className="mb-4 text-gray-700">
