@@ -54,7 +54,7 @@ export async function startPayment(publicId: string, siteUrl: string, ip?: strin
 
   const { data: order, error } = await admin.from('orders').select('*').eq('public_id', publicId).maybeSingle<OrderRow>();
   if (error) { console.error('[odeme] sipariş okunamadı', error); return { ok: false, reason: 'hata' }; }
-  if (!order) return { ok: false, reason: 'bulunamadi' };
+  if (!order) { console.warn('[odeme] sipariş bulunamadı (gizli anahtar doğru mu?)', publicId); return { ok: false, reason: 'bulunamadi' }; }
   if (order.status !== 'odeme_bekliyor') return { ok: false, reason: 'durum' };
 
   const { data: items, error: itemsError } = await admin
