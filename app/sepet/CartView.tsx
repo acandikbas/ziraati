@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { startTransition, useActionState, useState, useSyncExternalStore } from 'react';
 import { useCart, removeCartItem, updateCartItem, type CartItem } from '@/lib/cart';
+import { forgetCustomer, saveCustomer, useSavedCustomer } from '@/lib/customer';
 import { formatPrice } from '@/lib/format';
 import type { Quote } from '@/lib/orders';
 import { useQuote } from '@/lib/useQuote';
@@ -132,20 +133,42 @@ const initialState: OrderFormState = { error: null, values: {} };
 
 function CheckoutForm({ items }: { items: CartItem[] }) {
   const [state, formAction, pending] = useActionState(placeOrder, initialState);
-  const v = state.values;
+  const saved = useSavedCustomer();
+  // Hata dönmüşse girilen değerler, yoksa bu cihazda kayıtlı bilgiler
+  const fromState = Object.keys(state.values).length > 0;
+  const v: OrderFormState['values'] = fromState ? state.values : (saved ?? {});
+  // Gönderirken bilgiler kaydedilince form yeniden kurulmasın diye anahtar o anki haliyle dondurulur
+  const [frozenKey, setFrozenKey] = useState<string | null>(null);
+  const liveKey = saved ? 'kayitli' : 'bos';
+  const showSaved = saved && !fromState && !frozenKey;
 
   return (
     <form
+      // Kayıtlı bilgiler tarayıcıda okunduğunda alanlar onlarla yeniden kurulur
+      key={fromState ? 'girilen' : (frozenKey ?? liveKey)}
       // action={...} yerine onSubmit: React 19 action ile gönderilen formu hata durumunda da
       // sıfırlıyor; il/ilçe seçimleri kaybolmasın diye form elle gönderilir.
       onSubmit={e => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
+        setFrozenKey(k => k ?? liveKey);
+        if (data.get('hatirla')) saveCustomer(data);
+        else forgetCustomer();
         startTransition(() => formAction(data));
       }}
       className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6"
     >
-      <h2 className="text-lg font-bold text-gray-900">Teslimat Bilgileri</h2>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-lg font-bold text-gray-900">Teslimat Bilgileri</h2>
+        {showSaved && (
+          <button type="button" onClick={forgetCustomer} className="text-sm text-gray-600 underline hover:text-red-700">
+            Kayıtlı bilgileri temizle
+          </button>
+        )}
+      </div>
+      {showSaved && (
+        <p className="-mt-2 text-sm text-green-800">Önceki siparişinizdeki bilgiler dolduruldu, gerekirse değiştirebilirsiniz.</p>
+      )}
       <input type="hidden" name="items" value={JSON.stringify(items)} />
 
       <Field label="Ad Soyad" name="name" autoComplete="name" defaultValue={v.name} minLength={3} maxLength={100} />
@@ -168,6 +191,13 @@ function CheckoutForm({ items }: { items: CartItem[] }) {
       <label className="flex flex-col gap-1 text-sm font-semibold text-gray-800">
         Sipariş Notu (isteğe bağlı)
         <textarea name="note" maxLength={500} rows={2} defaultValue={v.note} className="rounded-lg border border-gray-300 px-3 py-2 font-normal" />
+      </label>
+      <label className="flex items-start gap-2 text-sm text-gray-700">
+        <input type="checkbox" name="hatirla" defaultChecked className="mt-1" />
+        <span>
+          Bilgilerimi sonraki siparişler için hatırla
+          <span className="block text-xs text-gray-500">Yalnızca bu cihazda, tarayıcınızda saklanır.</span>
+        </span>
       </label>
       <label className="flex items-start gap-2 text-sm text-gray-700">
         <input type="checkbox" name="onay" required className="mt-1" />
