@@ -4,6 +4,12 @@ import 'server-only';
 import { getSupabaseAdmin } from './supabase-admin';
 import { iyzicoConfig, initializeCheckoutForm, retrieveCheckoutForm, type BasketItem } from './iyzico';
 
+/** fetch hatalarının asıl sebebini (DNS, sertifika, zaman aşımı…) okunur hâle getirir. */
+function describe(err: unknown): string {
+  const e = err as { message?: string; cause?: { code?: string; message?: string } };
+  return [e?.message, e?.cause?.code, e?.cause?.message].filter(Boolean).join(' | ');
+}
+
 /** Ödenmeyen siparişler bu süreden sonra iptal edilir (iyzico ödeme sayfası ~30 dk geçerli). */
 export const PAYMENT_TIMEOUT_MINUTES = 60;
 
@@ -119,7 +125,7 @@ export async function startPayment(publicId: string, siteUrl: string, ip?: strin
     if (upError) { console.error('[odeme] token kaydedilemedi', upError); return { ok: false, reason: 'hata' }; }
     return { ok: true, url: res.paymentPageUrl };
   } catch (err) {
-    console.error('[odeme] iyzico erişilemedi', err);
+    console.error('[odeme] iyzico erişilemedi:', describe(err));
     return { ok: false, reason: 'hata' };
   }
 }
@@ -164,7 +170,7 @@ export async function completePayment(token: string): Promise<CompleteResult> {
     }
     return { publicId: order.public_id, outcome: 'basarili' };
   } catch (err) {
-    console.error('[odeme] iyzico sonucu sorgulanamadı', err);
+    console.error('[odeme] iyzico sonucu sorgulanamadı:', describe(err));
     return { publicId: order.public_id, outcome: 'basarisiz' };
   }
 }
