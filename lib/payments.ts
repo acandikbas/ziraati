@@ -6,8 +6,8 @@ import { iyzicoConfig, initializeCheckoutForm, retrieveCheckoutForm, type Basket
 
 /** fetch hatalarının asıl sebebini (DNS, sertifika, zaman aşımı…) okunur hâle getirir. */
 function describe(err: unknown): string {
-  const e = err as { message?: string; cause?: { code?: string; message?: string } };
-  return [e?.message, e?.cause?.code, e?.cause?.message].filter(Boolean).join(' | ');
+  const e = err as { message?: string; code?: string; cause?: { code?: string; message?: string } };
+  return [e?.message, e?.code, e?.cause?.code, e?.cause?.message].filter(Boolean).join(' | ');
 }
 
 /** Ödenmeyen siparişler bu süreden sonra iptal edilir (iyzico ödeme sayfası ~30 dk geçerli). */
