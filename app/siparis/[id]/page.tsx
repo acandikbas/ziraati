@@ -4,26 +4,66 @@ import { notFound } from 'next/navigation';
 import { formatPrice } from '@/lib/format';
 import { getOrderSummary, ORDER_STATUS } from '@/lib/orders';
 import { ClearCart } from './ClearCart';
+import { paymentsEnabled, PAYMENT_TIMEOUT_MINUTES } from '@/lib/payments';
+import { retryPayment } from './actions';
 
 export const metadata: Metadata = { title: 'Sipariş Özeti', robots: { index: false } };
 
-export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
-  const order = await getOrderSummary((await params).id);
+export default async function OrderPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { id } = await params;
+  const { odeme } = await searchParams;
+  const order = await getOrderSummary(id);
   if (!order) notFound();
+  const online = paymentsEnabled();
+  const paid = order.status !== 'odeme_bekliyor' && order.status !== 'iptal';
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <ClearCart />
-      <div className="mb-8 rounded-lg border border-green-200 bg-green-50 p-6 text-center">
-        <p className="mb-2 text-4xl">✅</p>
-        <h1 className="mb-2 text-2xl font-bold text-green-800">Siparişiniz alındı</h1>
-        <p className="text-gray-700">
-          Sipariş numaranız: <strong className="font-mono">{order.order_no}</strong>
-        </p>
-        <p className="mt-2 text-sm text-gray-600">Durum: {ORDER_STATUS[order.status] ?? order.status}</p>
-      </div>
+      {paid || !online ? (
+        <div className="mb-8 rounded-lg border border-green-200 bg-green-50 p-6 text-center">
+          <p className="mb-2 text-4xl">✅</p>
+          <h1 className="mb-2 text-2xl font-bold text-green-800">{paid ? 'Ödemeniz alındı, teşekkürler!' : 'Siparişiniz alındı'}</h1>
+          <p className="text-gray-700">
+            Sipariş numaranız: <strong className="font-mono">{order.order_no}</strong>
+          </p>
+          <p className="mt-2 text-sm text-gray-600">Durum: {ORDER_STATUS[order.status] ?? order.status}</p>
+        </div>
+      ) : order.status === 'iptal' ? (
+        <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
+          <h1 className="mb-2 text-2xl font-bold text-gray-800">Sipariş iptal edildi</h1>
+          <p className="text-gray-700">
+            <strong className="font-mono">{order.order_no}</strong> numaralı sipariş, ödeme {PAYMENT_TIMEOUT_MINUTES} dakika
+            içinde tamamlanmadığı için iptal edildi. Ürünleri yeniden sepete ekleyerek yeni sipariş verebilirsiniz.
+          </p>
+        </div>
+      ) : (
+        <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-6 text-center">
+          <h1 className="mb-2 text-2xl font-bold text-amber-900">
+            {odeme === 'basarisiz' ? 'Ödeme tamamlanamadı' : odeme === 'hata' ? 'Ödeme sayfası açılamadı' : 'Ödeme bekleniyor'}
+          </h1>
+          <p className="mb-4 text-gray-700">
+            Sipariş numaranız: <strong className="font-mono">{order.order_no}</strong>.{' '}
+            {odeme === 'basarisiz'
+              ? 'Kartınızdan ödeme alınmadı. Bilgilerinizi kontrol edip tekrar deneyebilirsiniz.'
+              : `Siparişiniz ödeme yapıldığında onaylanır; ${PAYMENT_TIMEOUT_MINUTES} dakika içinde ödenmezse iptal edilir.`}
+          </p>
+          <form action={retryPayment}>
+            <input type="hidden" name="siparis" value={id} />
+            <button type="submit" className="rounded-lg bg-green-600 px-8 py-3 text-lg font-bold text-white hover:bg-green-700">
+              {odeme ? 'Ödemeyi Tekrar Dene' : 'Ödemeye Geç'}
+            </button>
+          </form>
+        </div>
+      )}
 
-      {order.status === 'odeme_bekliyor' && (
+      {!online && order.status === 'odeme_bekliyor' && (
         <p className="mb-8 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
           Online ödeme adımı çok yakında eklenecek. Siparişinizi onaylamak ve ödeme için sizinle
           verdiğiniz telefon numarasından iletişime geçeceğiz.

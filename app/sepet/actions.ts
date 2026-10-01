@@ -1,6 +1,8 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { clientIpFrom, expireUnpaidOrders, paymentsEnabled, siteUrlFrom, startPayment } from '@/lib/payments';
 import { getSupabase } from '@/lib/supabase';
 import { quoteCart, sanitizeCart, type CartInput, type Quote } from '@/lib/orders';
 import { isValidLocation } from '@/lib/turkey';
@@ -42,6 +44,10 @@ export async function placeOrder(_prev: OrderFormState, formData: FormData): Pro
     return { error: 'Devam etmek için sipariş bilgilerinin doğruluğunu onaylayın.', values };
   }
 
+  // Online ödeme açıksa önce süresi dolmuş ödenmemiş siparişleri iptal et (stoklarını serbest bırakır)
+  const online = paymentsEnabled();
+  if (online) await expireUnpaidOrders();
+
   // Tutar, stok ve kargo burada değil veritabanındaki create_order() içinde hesaplanır.
   const { data, error } = await getSupabase().rpc('create_order', {
     p_customer: values,
@@ -58,6 +64,13 @@ export async function placeOrder(_prev: OrderFormState, formData: FormData): Pro
   if (!publicId) {
     console.error('[sepet/placeOrder] beklenmeyen yanıt', data);
     return { error: 'Sipariş şu anda oluşturulamadı. Lütfen biraz sonra tekrar deneyin.', values };
+  }
+
+  if (online) {
+    const h = await headers();
+    const result = await startPayment(publicId, siteUrlFrom(h), clientIpFrom(h));
+    // Ödeme sayfası açılamazsa sipariş yine de kayıtlı; müşteri sipariş sayfasından tekrar deneyebilir
+    redirect(result.ok ? result.url : `/siparis/${publicId}?odeme=hata`);
   }
   redirect(`/siparis/${publicId}`);
 }
