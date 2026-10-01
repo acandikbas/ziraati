@@ -159,10 +159,10 @@ function CheckoutForm({ items }: { items: CartItem[] }) {
       className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6"
     >
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-lg font-bold text-gray-900">Teslimat Bilgileri</h2>
+        <h2 className="whitespace-nowrap text-lg font-bold text-gray-900">Teslimat Bilgileri</h2>
         {showSaved && (
-          <button type="button" onClick={forgetCustomer} className="text-sm text-gray-600 underline hover:text-red-700">
-            Kayıtlı bilgileri temizle
+          <button type="button" onClick={forgetCustomer} className="whitespace-nowrap text-sm text-gray-600 underline hover:text-red-700">
+            Temizle
           </button>
         )}
       </div>
