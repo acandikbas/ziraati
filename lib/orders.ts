@@ -1,7 +1,8 @@
 import { getSupabase } from './supabase';
 import { shippingFee } from './shipping';
+import { hasSides, isSide, piecesFor, unitPriceFor, type Side } from './sides';
 
-export type Side = 'Sağ' | 'Sol';
+export type { Side };
 export type CartInput = { productId: number; quantity: number; side: Side | null };
 
 export type QuoteLine = {
@@ -10,7 +11,11 @@ export type QuoteLine = {
   name: string;
   href: string;
   imageUrl: string | null;
-  sideRequired: boolean;
+  /** Ürün Sağ/Sol seçimli mi */
+  hasSides: boolean;
+  /** Seçim yapılabilecek fiyatlar (yalnızca hasSides ise) */
+  sidePrice: number | null;
+  pairPrice: number | null;
   side: Side | null;
   quantity: number;
   unitPrice: number;
@@ -37,7 +42,7 @@ export function sanitizeCart(raw: unknown): CartInput[] {
     .map(x => ({
       productId: x.productId as number,
       quantity: Math.max(1, Math.min(99, Math.trunc(Number(x.quantity)) || 1)),
-      side: x.side === 'Sağ' || x.side === 'Sol' ? x.side : null,
+      side: isSide(x.side) ? x.side : null,
     }));
 }
 
@@ -51,32 +56,37 @@ export async function quoteCart(items: CartInput[]): Promise<Quote> {
   const ids = [...new Set(items.map(i => i.productId))];
   const { data, error } = await getSupabase()
     .from('products')
-    .select('id, slug, name, price, image_url, stock, side_required')
+    .select('id, slug, name, price, pair_price, image_url, stock')
     .in('id', ids);
   if (error) throw error;
   const byId = new Map((data ?? []).map(p => [p.id as number, p]));
 
-  // Aynı ürünün toplam adedi stokla karşılaştırılır
+  // Aynı ürünün toplam parça sayısı stokla karşılaştırılır (takım = 2 parça)
   const wanted = new Map<number, number>();
-  for (const i of items) wanted.set(i.productId, (wanted.get(i.productId) ?? 0) + i.quantity);
+  for (const i of items) {
+    const sided = hasSides(byId.get(i.productId)?.pair_price);
+    wanted.set(i.productId, (wanted.get(i.productId) ?? 0) + piecesFor(sided ? i.side : null, i.quantity));
+  }
 
   const lines: QuoteLine[] = items.map((item, index) => {
     const p = byId.get(item.productId);
     if (!p) {
       return {
         index, productId: item.productId, name: 'Satıştan kaldırılmış ürün', href: '/', imageUrl: null,
-        sideRequired: false, side: null, quantity: item.quantity, unitPrice: 0, lineTotal: 0,
+        hasSides: false, sidePrice: null, pairPrice: null, side: null, quantity: item.quantity, unitPrice: 0, lineTotal: 0,
         problem: 'Bu ürün artık satışta değil, lütfen sepetten çıkarın.',
       };
     }
-    const unitPrice = Number(p.price);
+    const sided = hasSides(p.pair_price);
+    const side = sided ? item.side : null;
+    const unitPrice = unitPriceFor(side, p.price, p.pair_price);
     let problem: string | null = null;
-    if (p.side_required && !item.side) problem = 'Lütfen Sağ veya Sol seçin.';
+    if (sided && !side) problem = 'Lütfen Sağ, Sol veya Sağ + Sol seçin.';
     else if (p.stock !== null && (wanted.get(p.id) ?? 0) > p.stock)
       problem = p.stock > 0 ? `Stokta yalnızca ${p.stock} adet var.` : 'Bu ürün tükendi.';
     return {
       index, productId: p.id, name: p.name, href: `/urun/${p.slug ?? p.id}`, imageUrl: p.image_url,
-      sideRequired: p.side_required, side: p.side_required ? item.side : null,
+      hasSides: sided, sidePrice: sided ? Number(p.price) : null, pairPrice: sided ? Number(p.pair_price) : null, side,
       quantity: item.quantity, unitPrice, lineTotal: unitPrice * item.quantity, problem,
     };
   });

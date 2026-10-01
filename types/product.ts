@@ -23,8 +23,11 @@ export interface Product {
   image_url: string | null;
   /** null = stok takibi yapılmıyor (satışa açık kabul edilir) */
   stock: number | null;
-  /** Paketinde tek taraf olan ürünlerde müşteri Sağ/Sol seçer */
-  side_required: boolean;
+  /**
+   * Doluysa ürün Sağ/Sol seçimlidir: price = tek taraf, pair_price = Sağ + Sol takım fiyatı.
+   * Boşsa taraf seçimi yoktur.
+   */
+  pair_price: number | null;
   subcategory_id: number;
   subcategories: {
     name: string;

@@ -7,6 +7,7 @@ import { useCart, removeCartItem, updateCartItem, type CartItem } from '@/lib/ca
 import { formatPrice } from '@/lib/format';
 import type { Quote } from '@/lib/orders';
 import { useQuote } from '@/lib/useQuote';
+import { SIDES } from '@/lib/sides';
 import { CITIES, districtsOf } from '@/lib/turkey';
 import { Combobox } from '@/components/Combobox';
 import { placeOrder, type OrderFormState } from './actions';
@@ -88,7 +89,7 @@ function CartLine({ line, item }: { line: Quote['lines'][number]; item: CartItem
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <Link href={line.href} className="font-semibold text-gray-900 hover:text-green-700">{line.name}</Link>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          {line.sideRequired && (
+          {line.hasSides && (
             <label className="flex items-center gap-1">
               Taraf:
               <select
@@ -97,8 +98,11 @@ function CartLine({ line, item }: { line: Quote['lines'][number]; item: CartItem
                 className="rounded border border-gray-300 px-2 py-1"
               >
                 <option value="">Seçin</option>
-                <option value="Sağ">Sağ</option>
-                <option value="Sol">Sol</option>
+                {SIDES.map(s => (
+                  <option key={s} value={s}>
+                    {s === 'Sağ + Sol' ? 'Sağ + Sol (takım)' : s} — {formatPrice(s === 'Sağ + Sol' ? line.pairPrice! : line.sidePrice!)}
+                  </option>
+                ))}
               </select>
             </label>
           )}

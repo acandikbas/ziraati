@@ -1,12 +1,14 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { isSide, type Side } from './sides';
+
+export type { Side };
 
 /**
  * Sepet tarayıcıda (localStorage) tutulur ve yalnızca ürün id, adet ve taraf bilgisini içerir.
  * Fiyat bilerek saklanmaz: gösterilen fiyatlar sunucudan, sipariş tutarı veritabanından gelir.
  */
-export type Side = 'Sağ' | 'Sol';
 export type CartItem = { productId: number; quantity: number; side: Side | null };
 
 const KEY = 'ziraati-sepet-v1';
@@ -23,7 +25,7 @@ function isItem(x: unknown): x is CartItem {
   return (
     Number.isInteger(i.productId) && (i.productId as number) > 0 &&
     Number.isInteger(i.quantity) && (i.quantity as number) >= 1 && (i.quantity as number) <= 99 &&
-    (i.side === null || i.side === 'Sağ' || i.side === 'Sol')
+    (i.side === null || isSide(i.side))
   );
 }
 

@@ -2,17 +2,23 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { addToCart, openCartDrawer, type Side } from '@/lib/cart';
+import { addToCart, openCartDrawer } from '@/lib/cart';
+import { formatPrice } from '@/lib/format';
+import { SIDES, unitPriceFor, type Side } from '@/lib/sides';
 
 export function AddToCart({
   productId,
-  sideRequired,
+  price,
+  pairPrice,
   available,
 }: {
   productId: number;
-  sideRequired: boolean;
+  price: number;
+  /** Doluysa Sağ / Sol / Sağ + Sol seçimi gösterilir */
+  pairPrice: number | null;
   available: boolean;
 }) {
+  const sided = pairPrice !== null;
   const [quantity, setQuantity] = useState(1);
   const [side, setSide] = useState<Side | null>(null);
   const [added, setAdded] = useState(false);
@@ -27,27 +33,29 @@ export function AddToCart({
   }
 
   function add() {
-    if (sideRequired && !side) {
-      setError('Lütfen Sağ veya Sol seçin.');
+    if (sided && !side) {
+      setError('Lütfen Sağ, Sol veya Sağ + Sol seçin.');
       return;
     }
-    addToCart({ productId, quantity, side: sideRequired ? side : null });
+    addToCart({ productId, quantity, side: sided ? side : null });
     setError(null);
     setAdded(true);
     openCartDrawer();
   }
 
+  const unit = unitPriceFor(side, price, pairPrice);
+
   return (
     <div className="flex flex-col gap-4">
-      {sideRequired && (
+      {sided && (
         <fieldset>
           <legend className="mb-2 text-sm font-semibold text-gray-800">Taraf seçin</legend>
-          <div className="flex gap-3">
-            {(['Sağ', 'Sol'] as const).map(s => (
+          <div className="grid grid-cols-3 gap-2">
+            {SIDES.map(s => (
               <label
                 key={s}
-                className={`flex-1 cursor-pointer rounded-lg border-2 py-2 text-center font-semibold ${
-                  side === s ? 'border-green-600 bg-green-50 text-green-800' : 'border-gray-300 text-gray-700'
+                className={`flex cursor-pointer flex-col items-center rounded-lg border-2 px-2 py-2 text-center ${
+                  side === s ? 'border-green-600 bg-green-50 text-green-800' : 'border-gray-300 text-gray-700 hover:border-green-300'
                 }`}
               >
                 <input
@@ -58,7 +66,9 @@ export function AddToCart({
                   onChange={() => { setSide(s); setError(null); setAdded(false); }}
                   className="sr-only"
                 />
-                {s}
+                <span className="font-semibold">{s === 'Sağ + Sol' ? 'Sağ + Sol' : s}</span>
+                <span className="text-xs text-gray-600">{s === 'Sağ + Sol' ? 'Takım' : 'Tek taraf'}</span>
+                <span className="mt-1 text-sm font-bold">{formatPrice(unitPriceFor(s, price, pairPrice))}</span>
               </label>
             ))}
           </div>
@@ -82,7 +92,7 @@ export function AddToCart({
           onClick={add}
           className="flex-1 rounded-lg bg-green-600 py-3 text-lg font-bold text-white hover:bg-green-700"
         >
-          Sepete Ekle
+          Sepete Ekle{(!sided || side) && quantity > 1 ? ` · ${formatPrice(unit * quantity)}` : ''}
         </button>
       </div>
 

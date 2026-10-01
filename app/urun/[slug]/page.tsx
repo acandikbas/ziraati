@@ -62,7 +62,10 @@ export default async function ProductPage({ params }: Props) {
           <p className="text-sm text-gray-500">Stok kodu: {product.sku}</p>
 
           <div className="flex items-center gap-3">
-            <p className="text-3xl font-bold text-green-700">{formatPrice(product.price)}</p>
+            <p className="text-3xl font-bold text-green-700">
+              {formatPrice(product.price)}
+              {product.pair_price !== null && <span className="ml-2 text-base font-medium text-gray-600">tek taraf</span>}
+            </p>
             <StockBadge stock={product.stock} />
           </div>
 
@@ -72,7 +75,12 @@ export default async function ProductPage({ params }: Props) {
               : `🚚 ${formatPrice(FREE_SHIPPING_THRESHOLD)} ve üzeri siparişlerde kargo ücretsiz`}
           </p>
 
-          <AddToCart productId={product.id} sideRequired={product.side_required} available={available} />
+          <AddToCart
+            productId={product.id}
+            price={Number(product.price)}
+            pairPrice={product.pair_price === null ? null : Number(product.pair_price)}
+            available={available}
+          />
         </div>
       </div>
 

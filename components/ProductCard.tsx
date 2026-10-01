@@ -26,7 +26,15 @@ export function ProductCard({ product, eager = false }: { product: Product; eage
         )}
         <h3 className="line-clamp-3 text-sm font-semibold text-gray-800 group-hover:text-green-700">{product.name}</h3>
         <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <p className="text-xl font-bold text-green-700">{formatPrice(product.price)}</p>
+          <div>
+            <p className="text-xl font-bold text-green-700">
+              {formatPrice(product.price)}
+              {product.pair_price !== null && <span className="ml-1 text-xs font-medium text-gray-500">/ tek taraf</span>}
+            </p>
+            {product.pair_price !== null && (
+              <p className="text-xs text-gray-600">Sağ + Sol takım: {formatPrice(product.pair_price)}</p>
+            )}
+          </div>
           <StockBadge stock={product.stock} />
         </div>
       </div>
